@@ -1,7 +1,7 @@
 /**
  *  FortrezZ Flow Meter Interface
  *
- *  Copyright 2016 Daniel Kurin
+ *  Copyright 2016 FortrezZ, LLC
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  *  in compliance with the License. You may obtain a copy of the License at:
@@ -41,7 +41,7 @@ metadata {
 	}
     
     preferences {
-       //input "gallonThreshhold", "number", title: "High Flow Rate Threshhold", description: "Flow rate (in gpm) that will trigger a notification.", defaultValue: 5, required: false, displayDuringSetup: true
+       input "gallonThreshhold", "number", title: "High Flow Rate Threshhold", description: "Flow rate (in gpm) that will trigger a notification.", defaultValue: 5, required: false, displayDuringSetup: true
     }
 
 	tiles(scale: 2) {
@@ -110,10 +110,10 @@ def parse(String description) {
 		}
 	}
 	//log.debug "\"$description\" parsed to ${results.inspect()}"
-    /*if(gallonThreshhold != device.currentValue("lastThreshhold"))
+    if(gallonThreshhold != device.currentValue("lastThreshhold"))
     {
     	results << setThreshhold(gallonThreshhold)
-    }*/
+    }
 	log.debug "zwave parsed to ${results.inspect()}"
 	return results
 }
