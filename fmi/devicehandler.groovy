@@ -236,7 +236,7 @@ def zwaveEvent(physicalgraph.zwave.commands.sensormultilevelv5.SensorMultilevelR
             sendAlarm("waterOverflow")
         }
 	} */
-	map
+	return map
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd)
@@ -244,11 +244,15 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd)
 	def map = [:]
     map.name = "gpm"
     def delta = cmd.scaledMeterValue - cmd.scaledPreviousMeterValue
+    if (delta < 0) {
+    	delta = 0
+    }
+
     map.value = delta
     map.unit = "gpm"
     sendDataToCloud(delta)
     sendEvent(name: "cumulative", value: cmd.scaledMeterValue, displayed: false, unit: "gal")
-	map
+	return map
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.alarmv2.AlarmReport cmd)
@@ -321,7 +325,7 @@ def zwaveEvent(physicalgraph.zwave.commands.alarmv2.AlarmReport cmd)
     }
     //log.debug "alarmV2: $cmd"
     
-	map
+	return map
 }
 
 def zwaveEvent(physicalgraph.zwave.commands.batteryv1.BatteryReport cmd) {
@@ -337,7 +341,7 @@ def zwaveEvent(physicalgraph.zwave.commands.batteryv1.BatteryReport cmd) {
 		map.unit = "%"
 		map.displayed = false
 	}
-	map
+	return map
 }
 
 def zwaveEvent(physicalgraph.zwave.Command cmd)
@@ -383,7 +387,7 @@ private getPictureName(category) {
   def pictureUuid = java.util.UUID.randomUUID().toString().replaceAll('-', '')
 
   def name = "image" + "_$pictureUuid" + "_" + category + ".png"
-  name
+  return name
 }
 
 def api(method, args = [], success = {}) {
@@ -396,7 +400,7 @@ def api(method, args = [], success = {}) {
 
   def request = methods.getAt(method)
 
-  doRequest(request.uri, request.type, success)
+  return doRequest(request.uri, request.type, success)
 }
 
 private doRequest(uri, type, success) {
@@ -424,5 +428,5 @@ def setThreshhold(rate)
     def cmds = []
     cmds << zwave.configurationV2.configurationSet(configurationValue: [(int)Math.round(rate*10)], parameterNumber: 5, size: 1).format()
     sendEvent(event)
-    response(cmds) // return a list containing the event and the result of response()
+    return response(cmds) // return a list containing the event and the result of response()
 }
