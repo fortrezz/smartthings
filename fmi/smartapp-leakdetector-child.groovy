@@ -1,7 +1,7 @@
 /**
  *  Leak Detector
  *
- *  Copyright 2016 FortrezZ, LLC
+ *  Copyright 2016 Daniel Kurin
  *
  */
 definition(
