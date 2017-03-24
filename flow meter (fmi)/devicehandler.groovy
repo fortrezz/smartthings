@@ -82,10 +82,10 @@ metadata {
 			state "freezing", label:'Freezing', icon:"st.alarm.temperature.freeze", backgroundColor:"#2eb82e"
 			state "overheated", label:'Overheated', icon:"st.alarm.temperature.overheat", backgroundColor:"#F80000"
 		}
-        valueTile("take1", "device.image", width: 2, height: 2, canChangeIcon: false, inactiveLabel: true, canChangeBackground: false, decoration: "flat") {
+        standardTile("take1", "device.image", width: 2, height: 2, canChangeIcon: false, inactiveLabel: true, canChangeBackground: false, decoration: "flat") {
             state "take", label: "", action: "Image Capture.take", nextState:"taking", icon: "st.secondary.refresh"
         }
-		valueTile("chartMode", "device.chartMode", width: 2, height: 2, canChangeIcon: false, canChangeBackground: false, decoration: "flat") {
+		standardTile("chartMode", "device.chartMode", width: 2, height: 2, canChangeIcon: false, canChangeBackground: false, decoration: "flat") {
 			state "day", label:'24 Hours\n(press to change)', nextState: "week", action: 'chartMode'
 			state "week", label:'7 Days\n(press to change)', nextState: "month", action: 'chartMode'
 			state "month", label:'4 Weeks\n(press to change)', nextState: "day", action: 'chartMode'
@@ -119,6 +119,11 @@ def parse(String description) {
 	return results
 }
 
+def updated()
+{
+	log.debug("Updated")
+}
+
 def setHighFlowLevel(level)
 {
 	setThreshhold(level)
@@ -141,6 +146,7 @@ def take() {
 }
 
 def chartMode(string) {
+	log.debug("ChartMode")
 	def state = device.currentValue("chartMode")
     def tempValue = ""
 	switch(state)
@@ -244,7 +250,8 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd)
 	def map = [:]
     map.name = "gpm"
     def delta = cmd.scaledMeterValue - cmd.scaledPreviousMeterValue
-    if (delta < 0) {
+    if (delta < 0 || delta > 10000) {
+        log.error(cmd)
     	delta = 0
     }
 
@@ -367,7 +374,7 @@ def sendDataToCloud(double data)
             resp.headers.each {
                 //log.debug "${it.name} : ${it.value}"
             }
-            log.debug "query response: ${resp.data}"
+            log.debug "sendDataToCloud query response: ${resp.data}"
         }
     } catch (e) {
         log.debug "something went wrong: $e"
