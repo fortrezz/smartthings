@@ -12,7 +12,7 @@
  *
  */
 metadata {
-	definition (name: "SmartSense Moisture", namespace: "smartthings", author: "SmartThings") {
+	definition (name: "FortrezZ Water Sensor", namespace: "fortrezz", author: "SmartThings") {
 		capability "Water Sensor"
 		capability "Sensor"
 		capability "Battery"
