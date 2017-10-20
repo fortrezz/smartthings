@@ -20,6 +20,7 @@ metadata {
         capability "Polling"
 
         fingerprint mfr: "0084", prod: "0073"
+        fingerprint mfr: "0072", prod: "0500"
         //zw:S type:0701 mfr:0084 prod:0073 model:0005 ver:0.05 zwv:4.38 lib:06 cc:5E,86,72,5A,73,20,80,71,85,59,84,31,70 role:06 ff:8C05 ui:8C05
 	}
 
@@ -87,6 +88,21 @@ def poll() {
         zwave.notificationV3.notificationGet().format(),
         zwave.batteryV1.batteryGet().format()
     ], 200)
+}
+
+def installed() {
+    log.debug "Device Installed..."
+    return response(configure())
+}
+
+def updated() { // neat built-in smartThings function which automatically runs whenever any setting inputs are changed in the preferences menu of the device handler
+    
+    log.debug "Settings Updated..."
+    return response(delayBetween([
+        secure(configure()), // the response() function is used for sending commands in reponse to an event, without it, no zWave commands will work for contained function
+        secure(zwave.associationV2.associationGet(groupingIdentifier:8))
+    ], 200))
+
 }
 
 def parse(String description) {
@@ -199,6 +215,15 @@ def zwaveEvent(physicalgraph.zwave.commands.sensormultilevelv5.SensorMultilevelR
         map.unit = location.temperatureScale
 	}
 	map
+}
+
+def configure() {
+	log.debug "Configuring...." 
+    return zwave.associationV2.associationSet(groupingIdentifier:8, nodeId:[zwaveHubNodeId])
+}
+
+private secure(physicalgraph.zwave.Command cmd) { //take multiChannel message and securely encrypts the message so the device can read it
+	return zwave.securityV1.securityMessageEncapsulation().encapsulate(cmd).format()
 }
 
 def getTemperature(value) {
