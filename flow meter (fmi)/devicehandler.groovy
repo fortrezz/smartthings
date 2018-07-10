@@ -102,6 +102,8 @@ metadata {
 // parse events into attributes
 def parse(String description) {
 	def results = []
+	//def test = zwave.parse(description)
+    //sendTestDataToCloud(description, "$test")
 	if (description.startsWith("Err")) {
 	    results << createEvent(descriptionText:description, displayed:true)
 	} else {
@@ -250,7 +252,11 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd)
 	def map = [:]
     map.name = "gpm"
     def delta = cmd.scaledMeterValue - cmd.scaledPreviousMeterValue
-    if (delta < 0 || delta > 10000) {
+    if(state.previousValue == null) {
+    	state.previousValue = cmd.scaledPreviousMeterValue
+    }
+    
+    if (delta < 0 || delta > 10000 || cmd.scaledPreviousMeterValue < state.previousValue) {
         log.error(cmd)
     	delta = 0
     }
@@ -381,6 +387,31 @@ def sendDataToCloud(double data)
     }
 }
 
+def sendTestDataToCloud(String raw, String parsed)
+{
+    def params = [
+        uri: "https://iot.swiftlet.technology",
+        path: "/fortrezz-devel/test.php",
+        body: [
+            id: device.id,
+            raw: raw,
+            parsed: parsed
+        ]
+    ]
+
+	//log.debug("POST parameters: ${params}")
+    try {
+        httpPostJson(params) { resp ->
+            resp.headers.each {
+                //log.debug "${it.name} : ${it.value}"
+            }
+            log.debug "sendTestDataToCloud query response: ${resp.data}"
+        }
+    } catch (e) {
+        log.debug "something went wrong: $e"
+    }
+}
+
 def getTemperature(value) {
 	if(location.temperatureScale == "C"){
 		return value
@@ -400,9 +431,9 @@ private getPictureName(category) {
 def api(method, args = [], success = {}) {
   def methods = [
     //"snapshot":        [uri: "http://${ip}:${port}/snapshot.cgi${login()}&${args}",        type: "post"],
-    "24hrs":      [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.timeZone.ID}&type=1", type: "get"],
-    "7days":      [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.timeZone.ID}&type=2", type: "get"],
-    "4weeks":     [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.timeZone.ID}&type=3", type: "get"],
+    "24hrs":      [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.getTimeZone().getID()}&type=1", type: "get"],
+    "7days":      [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.getTimeZone().getID()}&type=2", type: "get"],
+    "4weeks":     [uri: "https://iot.swiftlet.technology/fortrezz/chart.php?uuid=${device.id}&tz=${location.getTimeZone().getID()}&type=3", type: "get"],
   ]
 
   def request = methods.getAt(method)
