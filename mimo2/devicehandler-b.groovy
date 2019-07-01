@@ -21,6 +21,9 @@ metadata {
 		capability "Voltage Measurement"
         capability "Refresh"
 	}
+        preferences {
+        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
+       }
     
 	tiles {
          standardTile("switch", "device.switch", width: 2, height: 2) {

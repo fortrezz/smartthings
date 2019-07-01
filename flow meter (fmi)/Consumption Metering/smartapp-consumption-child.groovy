@@ -25,7 +25,7 @@ definition(
     iconX3Url: "https://s3.amazonaws.com/smartapp-icons/Convenience/Cat-Convenience@2x.png")
 
 preferences {
-	page(name: "prefsPage", title: "Choose the detector behavior", install: true, uninstall: true)
+	page(name: "prefsPage", title: "Plugin version 1.5\nChoose the detector behavior", install: true, uninstall: true)
 
     // Do something here like update a message on the screen,
     // or introduce more inputs. submitOnChange will refresh

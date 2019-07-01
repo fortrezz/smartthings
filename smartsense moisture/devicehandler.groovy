@@ -31,6 +31,9 @@ metadata {
 		for (int i = 0; i <= 100; i += 20) {
 			status "battery ${i}%": new physicalgraph.zwave.Zwave().batteryV1.batteryReport(batteryLevel: i).incomingMessage()
 		}
+            preferences {
+        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
+    	}
 	}
 	
 	tiles(scale: 2) {

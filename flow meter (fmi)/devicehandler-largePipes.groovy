@@ -41,7 +41,6 @@ metadata {
 	}
     
     preferences {
-        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
        input "gallonThreshhold", "decimal", title: "High Flow Rate Threshhold", description: "Flow rate (in gpm) that will trigger a notification.", defaultValue: 5, required: false, displayDuringSetup: true
        input("registerEmail", type: "email", required: false, title: "Email Address", description: "Register your device with FortrezZ", displayDuringSetup: true)
     }
@@ -256,7 +255,7 @@ def zwaveEvent(physicalgraph.zwave.commands.meterv3.MeterReport cmd)
     	delta = 0
     }
 
-    map.value = delta
+    map.value = delta * 10
     map.unit = "gpm"
     sendDataToCloud(delta)
     sendEvent(name: "cumulative", value: cmd.scaledMeterValue, displayed: false, unit: "gal")

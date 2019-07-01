@@ -1,4 +1,3 @@
-
 /**
  *  FortrezZ Water Consumption Metering
  *
@@ -26,9 +25,8 @@ definition(
 
 
 preferences {
-	page(name: "page2", title: "Select device and actions", install: true, uninstall: true)
+	page(name: "page2", title: "Plugin version 1.5\nSelect device and actions", install: true, uninstall: true)
 }
-
 def page2() {
     dynamicPage(name: "page2") {
         section("Choose a water meter to monitor:") {

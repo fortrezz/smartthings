@@ -35,15 +35,17 @@ metadata {
         command "off2"
         
         fingerprint deviceId: "0x2100", inClusters: "0x5E,0x86,0x72,0x5A,0x59,0x71,0x98,0x7A"
-	}
-    
-    preferences {
+         preferences {
 
+        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
         input ("RelaySwitchDelay", "decimal", title: "Delay between relay switch on and off in seconds. Only Numbers 0 to 3 allowed. 0 value will remove delay and allow relay to function as a standard switch:\nRelay 1", description: "Numbers 0 to 3.1 allowed.", defaultValue: 0, required: false, displayDuringSetup: true)
         input ("RelaySwitchDelay2", "decimal", title: "Relay 2", description: "Numbers 0 to 3.1 allowed.", defaultValue: 0, required: false, displayDuringSetup: true)
-        input ("Sig1AD", "bool", title: "Switch off for digital, on for analog:\nSIG1", required: false, displayDuringSetup: true)
-        input ("Sig2AD", "bool", title: "SIG2", required: false, displayDuringSetup: true)
+        input ("Sig1AD", "bool", title: "Switch off for digital, on for analog:\nSIG1", required: false, displayDuringSetup: true , defaultValue: false)
+        input ("Sig2AD", "bool", title: "SIG2", required: false, displayDuringSetup: true, defaultValue: false)
         } // the range would be 0 to 3.1, but the range value would not accept 3.1, only whole numbers (i tried paranthesis and fractions too. :( )
+	}
+    
+   
 
        
 	tiles {
@@ -266,21 +268,26 @@ def configure() {
 	log.debug "Configuring...." 
     def sig1
     def sig2
-    if (Sig1AD == true)
+    if (Sig1AD == true || Sig1AD == null)
     {	sig1 = 0x01
         state.AD1 = true}
     else if (Sig1AD == false) 
     {	sig1 = 0x40
     	state.AD1 = false}
-    if (Sig2AD == true)
+    if (Sig2AD == true || Sig2AD == null)
     {	sig2 = 0x01
     	state.AD2 = true}
     else if (Sig2AD == false) 
     {	sig2 = 0x40
     	state.AD2 = false}
-    
-	def delay = (RelaySwitchDelay*10).toInteger() // the input which we get from the user is a string and is in seconds while the MIMO2 configuration requires it in 100ms so - change to integer and multiply by 10  
-    def delay2 = (RelaySwitchDelay2*10).toInteger() // the input which we get from the user is a string and is in seconds while the MIMO2 configuration requires it in 100ms so - change to integer and multiply by 10
+        
+    def delay = 0;
+    def delay2 = 0;
+
+	if (RelaySwitchDelay != null) {delay = (RelaySwitchDelay*10).toInteger()}// the input which we get from the user is a string and is in seconds while the MIMO2 configuration requires it in 100ms so - change to integer and multiply by 10  
+
+    if (RelaySwitchDelay2 != null) {delay2 = (RelaySwitchDelay2*10).toInteger()} // the input which we get from the user is a string and is in seconds while the MIMO2 configuration requires it in 100ms so - change to integer and multiply by 10
+
 	if (delay > 31) 
     {
         log.debug "Relay 1 input ${delay / 10} set too high. Max value is 3.1"
@@ -302,10 +309,8 @@ def configure() {
     	delay = 0
     } 
 
-    
-    
     return delayBetween([
-        encap(zwave.multiChannelAssociationV2.multiChannelAssociationSet(groupingIdentifier:3, nodeId:[zwaveHubNodeId]), 0),
+        encap(zwave.multiChannelAssociationV2.multiChannelAssociationSet(groupingIdentifier:3, nodeId:[zwaveHubNodeId]), 0), 
         encap(zwave.multiChannelAssociationV2.multiChannelAssociationSet(groupingIdentifier:2, nodeId:[zwaveHubNodeId]), 0),
 
         encap(zwave.multiChannelAssociationV2.multiChannelAssociationSet(groupingIdentifier:2, nodeId:[zwaveHubNodeId]), 1),

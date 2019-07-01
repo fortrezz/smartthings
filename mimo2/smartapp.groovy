@@ -26,6 +26,7 @@ definition(
 
 
 preferences {
+section("Plugin Version 1.5") {}
 	section("Title") {
 		input(name: "devices", type: "capability.voltageMeasurement", title: "MIMO2 devices", description: null, required: true, submitOnChange: true, multiple: true)
 	}

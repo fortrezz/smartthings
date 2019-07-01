@@ -17,7 +17,7 @@ definition(
 
 
 preferences {
-	page(name: "prefsPage", title: "Choose the detector behavior", install: true, uninstall: true)
+	page(name: "prefsPage", title: "Plugin version 1.5\nChoose the detector behavior", install: true, uninstall: true)
 
     // Do something here like update a message on the screen,
     // or introduce more inputs. submitOnChange will refresh
@@ -30,6 +30,8 @@ preferences {
 def prefsPage() {
 	def daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     dynamicPage(name: "prefsPage") {
+
+
         section("Set Leak Threshold by...") {
             input(name: "type", type: "enum", title: "Type...", submitOnChange: true, options: ruleTypes())
         }

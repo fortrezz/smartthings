@@ -37,6 +37,7 @@ metadata {
 	}
     
     preferences {
+        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
        input "RelaySwitchDelay", "decimal", title: "Delay between relay switch on and off in seconds. Only Numbers 0 to 3.0 allowed. 0 value will remove delay and allow relay to function as a standard switch", description: "Numbers 0 to 3.1 allowed.", defaultValue: 0, required: false, displayDuringSetup: true
     }
 
@@ -166,7 +167,8 @@ def CalculateVoltage(ADCvalue)
 	
 
 def configure() {
-	def x = (RelaySwitchDelay*10).toInteger()
+	 def x = 0;
+	if (RelaySwitchDelay != null) {x = (RelaySwitchDelay*10).toInteger()}
     log.debug "Configuring.... " //setting up to monitor power alarm and actuator duration
     
 	delayBetween([

@@ -23,6 +23,9 @@ metadata {
         fingerprint mfr: "0072", prod: "0500"
         //zw:S type:0701 mfr:0084 prod:0073 model:0005 ver:0.05 zwv:4.38 lib:06 cc:5E,86,72,5A,73,20,80,71,85,59,84,31,70 role:06 ff:8C05 ui:8C05
 	}
+    preferences {
+        input ("version", "text", title: "Plugin Version 1.5", description:"", required: false, displayDuringSetup: true)
+       }
 
 	simulator {
 		status "dry": "command: 7105, payload: 00 00 00 FF 05 FE 00 00"
